@@ -2,6 +2,8 @@
 
 A full-stack online bookstore built with the **MERN stack**.
 
+> 🚧 **Under Construction** — This project is currently in development.
+
 ## 🛠️ Tech Stack
 
 - MongoDB

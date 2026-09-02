@@ -1,8 +1,12 @@
+import React, { useState } from "react";
 import { FaFacebook, FaInstagram, FaUser } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
+import { FaCaretUp, FaCaretDown } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 function Header() {
+  const [dropdown, setDropdown] = useState(false);
+
   return (
     <>
       {/* Top Header */}
@@ -24,7 +28,7 @@ function Header() {
             </h1>
           </Link>
 
-          {/* Social + Login - Right End */}
+          {/* Social + Login + User */}
           <div className="ml-auto flex items-center gap-5">
             <a
               href="#"
@@ -47,6 +51,7 @@ function Header() {
               <FaXTwitter size={18} />
             </a>
 
+            {/* Login */}
             <Link
               to="/auth"
               className="flex items-center gap-2 rounded-lg border-2 border-slate-800 px-4 py-2 text-sm font-semibold text-slate-800 transition-all hover:bg-slate-800 hover:text-white"
@@ -54,6 +59,35 @@ function Header() {
               <FaUser size={14} />
               Login
             </Link>
+
+            {/* User Button */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setDropdown(!dropdown)}
+                className="flex cursor-pointer items-center gap-2 rounded-lg border-2 border-slate-800 px-3 py-2 text-sm font-semibold text-slate-800 transition-all hover:bg-slate-800 hover:text-white"
+              >
+                <FaUser size={14} />
+                User
+                {dropdown ? <FaCaretUp /> : <FaCaretDown />}
+              </button>
+
+              {/* Dropdown */}
+              {dropdown && (
+                <div className="absolute right-0 z-10 mt-2 w-32 overflow-hidden rounded-lg border-2 border-slate-800 bg-white shadow-lg">
+                  <Link
+                    to="/profile"
+                    className="block border-b-2 border-slate-200 px-4 py-2 text-sm text-green-600 hover:bg-green-500 hover:text-white"
+                  >
+                    Profile
+                  </Link>
+
+                  <p className="cursor-pointer px-4 py-2 text-sm text-red-600 hover:bg-red-500 hover:text-white">
+                    Logout
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </header>

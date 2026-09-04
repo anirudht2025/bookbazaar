@@ -214,9 +214,9 @@ function Profile() {
           {/* BOOK STATUS */}
           {bookStatus && (
             <div className="p-2">
-              <div className="grid grid-cols-1 gap-4 border p-3 md:grid-cols-6">
+              <div className="flex flex-col gap-6 border p-4 md:flex-row md:items-center md:justify-between">
                 {/* Book Details */}
-                <div className="md:col-span-5">
+                <div className="md:flex-1">
                   <h1 className="text-xl font-bold">Harry Potter</h1>
 
                   <h4 className="font-bold text-green-600">₹500</h4>
@@ -235,22 +235,18 @@ function Profile() {
                     <span className="rounded-md border-2 border-green-600 px-4 py-2 font-bold text-green-600">
                       APPROVED
                     </span>
-
-                    <span className="rounded-md border-2 border-amber-500 px-4 py-2 font-bold text-amber-500">
-                      PENDING
-                    </span>
                   </div>
                 </div>
 
                 {/* Book Image */}
-                <div className="flex flex-col items-center gap-3 md:col-span-1">
+                <div className="flex w-full flex-col items-center gap-3 md:w-32">
                   <img
                     src="https://m.media-amazon.com/images/I/91A6EgLH+2L.jpg"
                     alt="Harry Potter"
-                    className="h-40 w-full rounded-md object-cover"
+                    className="h-40 w-28 rounded-md object-cover"
                   />
 
-                  <button className="w-full rounded-md bg-red-500 px-3 py-2 font-semibold text-white hover:bg-red-700">
+                  <button className="w-28 rounded-md bg-red-500 px-3 py-2 font-semibold text-white hover:bg-red-700 hover:cursor-pointer">
                     REMOVE
                   </button>
                 </div>
@@ -259,7 +255,43 @@ function Profile() {
           )}
 
           {/* PURCHASE HISTORY */}
-          {purchaseStatus && <h2>Purchase History</h2>}
+          {purchaseStatus && (
+            <div className="p-2">
+              <div className="flex flex-col gap-6 border p-4 md:flex-row md:items-center md:justify-between">
+                {/* Book Details */}
+                <div className="md:flex-1">
+                  <h1 className="text-xl font-bold">Harry Potter</h1>
+
+                  <h4 className="font-bold text-green-600">₹500</h4>
+
+                  <p className="mt-2 text-justify">
+                    Harry Potter is a young wizard who discovers his magical
+                    heritage and begins an exciting journey at Hogwarts School
+                    of Witchcraft and Wizardry. Along the way, he makes new
+                    friends, faces dangerous challenges, and uncovers secrets
+                    about his past. The story is filled with magic, friendship,
+                    adventure, and unforgettable moments.
+                  </p>
+
+                  {/* Status */}
+                  <div className="mt-3 flex items-center gap-4">
+                    <span className="rounded-md border-2 border-green-600 px-4 py-2 font-bold text-green-600">
+                      PURCHASED
+                    </span>
+                  </div>
+                </div>
+
+                {/* Book Image */}
+                <div className="flex w-full flex-col items-center gap-3 md:w-32">
+                  <img
+                    src="https://m.media-amazon.com/images/I/91A6EgLH+2L.jpg"
+                    alt="Harry Potter"
+                    className="h-40 w-28 rounded-md object-cover"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

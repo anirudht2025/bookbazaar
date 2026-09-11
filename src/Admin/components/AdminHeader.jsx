@@ -62,7 +62,7 @@ function AdminHeader() {
       </nav> */}
 
       {/* Welcome Marquee */}
-      <div className="w-full bg-gray-800 py-1.5">
+      <div className="w-full bg-black py-1.5">
         <marquee>
           <h1 className="text-white">
             Welcome, Admin! You're all set to manage and monitor the system.

@@ -70,7 +70,7 @@ function Resources() {
                 </div>
 
                 {/* User 2 */}
-                <div className="w-[20rem] rounded-md border border-gray-200 bg-gray-100 p-4 shadow-md">
+                {/* <div className="w-[20rem] rounded-md border border-gray-200 bg-gray-100 p-4 shadow-md">
                   <h1 className="my-2 text-center font-semibold">
                     User ID : 787809056790
                   </h1>
@@ -94,7 +94,7 @@ function Resources() {
                       Remove
                     </button>
                   </div>
-                </div>
+                </div> */}
               </div>
             ) : (
               /* Books */
@@ -125,7 +125,7 @@ function Resources() {
                 </div>
 
                 {/* Book 2 */}
-                <div className="w-[20rem] rounded-md border border-gray-200 bg-gray-100 p-4 shadow-md">
+                {/* <div className="w-[20rem] rounded-md border border-gray-200 bg-gray-100 p-4 shadow-md">
                   <h1 className="my-2 text-center font-semibold">
                     Book ID : 987654322
                   </h1>
@@ -147,7 +147,7 @@ function Resources() {
                       Approve
                     </button>
                   </div>
-                </div>
+                </div> */}
               </div>
             )}
           </div>

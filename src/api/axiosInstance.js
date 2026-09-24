@@ -1,3 +1,4 @@
+// Import axios
 import axios from "axios";
 
 // Create Axios instance
@@ -6,13 +7,14 @@ const axiosInstance = axios.create({
   timeout: 5000,
 });
 
-// Response interceptor
+// Add response interceptor
 axiosInstance.interceptors.response.use(
   (response) => {
     console.log("Response Received!");
     return response;
   },
   (error) => {
+    // Handle response errors
     if (error.response) {
       const status = error.response.status;
 
@@ -30,7 +32,8 @@ axiosInstance.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
+// Export Axios instance
 export default axiosInstance;

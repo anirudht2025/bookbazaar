@@ -1,5 +1,7 @@
 import "./App.css";
 import { Route, Routes } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import Auth from "./pages/Auth";
 import Home from "./pages/Home";
@@ -20,25 +22,30 @@ import Pnf from "./pages/Pnf";
 
 function App() {
   return (
-    <Routes>
-      {/* Common */}
-      <Route path="/" element={<Home />} />
-      <Route path="/auth" element={<Auth />} />
+    <>
+      <Routes>
+        {/* Common */}
+        <Route path="/" element={<Home />} />
+        <Route path="/auth" element={<Auth />} />
 
-      {/* User */}
-      <Route path="/books" element={<Books />} />
-      <Route path="/books/:bid" element={<BookDetails />} />
-      <Route path="/contact" element={<Contact />} />
-      <Route path="/profile" element={<Profile />} />
+        {/* User */}
+        <Route path="/books" element={<Books />} />
+        <Route path="/books/:bid" element={<BookDetails />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/profile" element={<Profile />} />
 
-      {/* Admin */}
-      <Route path="/admin/dashboard" element={<Dashboard />} />
-      <Route path="/admin/resources" element={<Resources />} />
-      <Route path="/admin/settings" element={<Settings />} />
+        {/* Admin */}
+        <Route path="/admin/dashboard" element={<Dashboard />} />
+        <Route path="/admin/resources" element={<Resources />} />
+        <Route path="/admin/settings" element={<Settings />} />
 
-      {/* 404 */}
-      <Route path="*" element={<Pnf />} />
-    </Routes>
+        {/* 404 */}
+        <Route path="*" element={<Pnf />} />
+      </Routes>
+
+      {/* React Toastify */}
+      <ToastContainer />
+    </>
   );
 }
 

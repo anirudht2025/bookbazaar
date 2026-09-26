@@ -1,6 +1,3 @@
-// Import axios
-import axios from "axios";
-
 // Import axios instance
 import axiosInstance from "./axiosInstance";
 
@@ -16,7 +13,7 @@ const apiService = async (httpMethod, url, reqBody, reqHeader) => {
 
   try {
     // Send request
-    const response = await axios(reqConfig);
+    const response = await axiosInstance(reqConfig);
     return response;
   } catch (err) {
     // Handle error

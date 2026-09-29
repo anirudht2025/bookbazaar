@@ -1,13 +1,28 @@
 import React, { useState } from "react";
-import { FaRegUserCircle, FaGoogle } from "react-icons/fa";
+
+import { useNavigate } from "react-router-dom";
+
+import { FaRegUserCircle } from "react-icons/fa";
+import { FcGoogle } from "react-icons/fc";
+
 import { useFormik } from "formik";
 import * as Yup from "yup";
+
 import { userRegisterAPI } from "../services/allApis";
+import { userLoginAPI } from "../services/allApis";
+
+import { useGoogleLogin } from "@react-oauth/google";
+// import { GoogleLogin } from "@react-oauth/google";
+
+import { jwtDecode } from "jwt-decode";
+
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function Auth() {
   const [authStatus, setAuthStatus] = useState(false);
+
+  const nav = useNavigate();
 
   const formik = useFormik({
     initialValues: {
@@ -17,9 +32,11 @@ function Auth() {
     },
 
     validationSchema: Yup.object({
-      username: Yup.string()
-        .min(3, "Must be at least 3 characters")
-        .required("Required"),
+      username: authStatus
+        ? Yup.string()
+            .min(3, "Must be at least 3 characters")
+            .required("Required")
+        : Yup.string(),
 
       email: Yup.string().email("Invalid email").required("Required"),
 
@@ -36,7 +53,7 @@ function Auth() {
           resetForm();
         }
       } else {
-        console.log("Login API");
+        handleLogin(values);
       }
     },
   });
@@ -59,6 +76,47 @@ function Auth() {
       return false;
     }
   };
+
+  const handleLogin = async (data) => {
+    try {
+      const response = await userLoginAPI(data);
+
+      console.log(response);
+
+      if (response.status === 200) {
+        sessionStorage.setItem("token", response.data.token);
+        sessionStorage.setItem("user", JSON.stringify(response.data.user));
+
+        toast.success("Login Successful!");
+
+        if (response.data.user.role === "admin") {
+          nav("/admin");
+        } else {
+          nav("/");
+        }
+      } else {
+        toast.error("Login Failed!");
+      }
+    } catch (err) {
+      console.log(err);
+      toast.error("Login Failed!");
+    }
+  };
+
+  const handleGoogleLogin = (credentialResponse) => {
+    console.log("credentialResponse", credentialResponse);
+
+    const res = jwtDecode(credentialResponse.credential);
+
+    console.log(res);
+  };
+
+  const googleLogin = useGoogleLogin({
+    onSuccess: handleGoogleLogin,
+    onError: () => {
+      console.log("Google Login Failed");
+    },
+  });
 
   return (
     <div className="min-h-screen w-full bg-[url('https://wallpaperaccess.com/full/124383.jpg')] bg-cover bg-center">
@@ -170,8 +228,12 @@ function Auth() {
             <div className="h-px flex-1 bg-gray-700"></div>
           </div>
           {/* Google */}
-          <button className="flex w-full items-center justify-center gap-3 rounded-lg border border-gray-700 bg-white py-3 font-semibold text-gray-800 transition hover:bg-gray-100">
-            <FaGoogle className="text-red-500" />
+          <button
+            type="button"
+            onClick={() => googleLogin()}
+            className="flex w-full items-center justify-center gap-3 rounded-lg border border-gray-700 bg-white py-3 font-semibold text-gray-800 transition hover:bg-gray-100"
+          >
+            <FcGoogle />
             Continue with Google
           </button>
           {/* Register */}

@@ -9,3 +9,8 @@ export const userRegisterAPI = async (data) => {
 export const userLoginAPI = async (data) => {
   return await apiService("POST", "/login", data);
 };
+
+// Google login -> authenticate user and generate token
+export const googleLoginAPI = async (data) => {
+  return await apiService("POST", "/google-auth", data);
+};

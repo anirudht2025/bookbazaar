@@ -10,9 +10,10 @@ import * as Yup from "yup";
 
 import { userRegisterAPI } from "../services/allApis";
 import { userLoginAPI } from "../services/allApis";
+import { googleLoginAPI } from "../services/allApis";
 
-import { useGoogleLogin } from "@react-oauth/google";
-// import { GoogleLogin } from "@react-oauth/google";
+// import { useGoogleLogin } from "@react-oauth/google";
+import { GoogleLogin } from "@react-oauth/google";
 
 import { jwtDecode } from "jwt-decode";
 
@@ -103,20 +104,35 @@ function Auth() {
     }
   };
 
-  const handleGoogleLogin = (credentialResponse) => {
+  const handleGoogleLogin = async (credentialResponse) => {
     console.log("credentialResponse", credentialResponse);
 
     const res = jwtDecode(credentialResponse.credential);
 
-    console.log(res);
+    const { email, name, picture } = res;
+
+    console.log(email, name, picture);
+
+    const response = await googleLoginAPI({
+      email,
+      name,
+      picture,
+    });
+
+    sessionStorage.setItem("token", response.data.token);
+    sessionStorage.setItem("user", JSON.stringify(response.data.user));
+
+    toast.success("Google Login Successful!");
+
+    nav("/");
   };
 
-  const googleLogin = useGoogleLogin({
-    onSuccess: handleGoogleLogin,
-    onError: () => {
-      console.log("Google Login Failed");
-    },
-  });
+  // const googleLogin = useGoogleLogin({
+  //   onSuccess: handleGoogleLogin,
+  //   onError: () => {
+  //     console.log("Google Login Failed");
+  //   },
+  // });
 
   return (
     <div className="min-h-screen w-full bg-[url('https://wallpaperaccess.com/full/124383.jpg')] bg-cover bg-center">
@@ -228,14 +244,14 @@ function Auth() {
             <div className="h-px flex-1 bg-gray-700"></div>
           </div>
           {/* Google */}
-          <button
-            type="button"
-            onClick={() => googleLogin()}
-            className="flex w-full items-center justify-center gap-3 rounded-lg border border-gray-700 bg-white py-3 font-semibold text-gray-800 transition hover:bg-gray-100"
-          >
-            <FcGoogle />
-            Continue with Google
-          </button>
+          <div className="flex justify-center">
+            <GoogleLogin
+              onSuccess={handleGoogleLogin}
+              onError={() => {
+                console.log("Google Login Failed");
+              }}
+            />
+          </div>
           {/* Register */}
           <div className="mt-6 flex justify-center gap-1 text-sm">
             <p className="text-gray-400">

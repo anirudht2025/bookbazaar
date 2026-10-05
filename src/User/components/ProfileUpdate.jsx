@@ -13,6 +13,10 @@ function ProfileUpdate({ setSidebar }) {
 
   const [existingPicture, setExistingPicture] = useState("");
 
+  const [fileSelected, setFileSelected] = useState(false);
+  const [fileType, setFileType] = useState(false);
+  const [preview, setPreview] = useState("");
+
   useEffect(() => {
     if (sessionStorage.getItem("user")) {
       const user = JSON.parse(sessionStorage.getItem("user"));
@@ -29,10 +33,6 @@ function ProfileUpdate({ setSidebar }) {
       setExistingPicture(user?.picture || "");
     }
   }, []);
-
-  const [fileSelected, setFileSelected] = useState(false);
-  const [fileType, setFileType] = useState(false);
-  const [preview, setPreview] = useState("");
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];

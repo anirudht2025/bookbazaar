@@ -7,6 +7,22 @@ const axiosInstance = axios.create({
   timeout: 5000,
 });
 
+// Add request interceptor
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = sessionStorage.getItem("token");
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  },
+);
+
 // Add response interceptor
 axiosInstance.interceptors.response.use(
   (response) => {

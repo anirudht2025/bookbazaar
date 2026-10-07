@@ -44,7 +44,11 @@ function App() {
       </Routes>
 
       {/* React Toastify */}
-      <ToastContainer />
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        style={{ zIndex: 99999 }}
+      />
     </>
   );
 }

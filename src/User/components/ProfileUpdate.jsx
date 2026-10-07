@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../api/axiosInstance";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { profileEditAPI } from "../../services/allApis";
 
 function ProfileUpdate({ setSidebar }) {
   const [userData, setUserData] = useState({
@@ -70,8 +73,62 @@ function ProfileUpdate({ setSidebar }) {
     setSidebar(false);
   };
 
+  const handleProfileUpdate = async () => {
+    const { username, email, password, bio } = userData;
+
+    if (!username || !email) {
+      toast.warning("Enter Valid Inputs!!");
+    } else {
+      if (userData.picture) {
+        const formData = new FormData();
+
+        formData.append("id", userData.id);
+        formData.append("username", userData.username);
+        formData.append("email", userData.email);
+        formData.append("password", userData.password);
+        formData.append("bio", userData.bio);
+        formData.append("profileImage", userData.picture);
+
+        const response = await profileEditAPI(formData);
+
+        if (response.status === 200) {
+          toast.success("Profile Updated!!");
+
+          sessionStorage.setItem("user", JSON.stringify(response.data));
+
+          setTimeout(() => {
+            handleCancel();
+          }, 2000);
+        } else {
+          toast.error("Something Went Wrong!!");
+          handleCancel();
+        }
+      } else {
+        const response = await profileEditAPI(userData);
+
+        if (response.status === 200) {
+          toast.success("Profile Updated!!");
+
+          sessionStorage.setItem("user", JSON.stringify(response.data));
+
+          setTimeout(() => {
+            handleCancel();
+          }, 2000);
+        } else {
+          toast.error("Something Went Wrong!!");
+          handleCancel();
+        }
+      }
+    }
+  };
+  
   return (
     <div className="fixed top-0 z-10 h-screen w-screen bg-black/30">
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        style={{ zIndex: 99999 }}
+      />
       <div className="h-screen w-[50vh] rounded-t-lg border-r border-gray-400 bg-white shadow-2xl">
         {/* Header */}
         <div className="flex items-center justify-between rounded-t-lg bg-gray-800 px-5 py-5 text-white">
@@ -95,7 +152,13 @@ function ProfileUpdate({ setSidebar }) {
             htmlFor="fileinp"
             className="mb-6 flex cursor-pointer justify-center"
           >
-            <input type="file" name="profile" className="hidden" id="fileinp" />
+            <input
+              type="file"
+              name="profile"
+              className="hidden"
+              id="fileinp"
+              onChange={handleFileUpload}
+            />
 
             {existingPicture === "" ? (
               <img
@@ -133,6 +196,9 @@ function ProfileUpdate({ setSidebar }) {
             name="email"
             placeholder="Email"
             value={userData.email}
+            onChange={(e) =>
+              setUserData({ ...userData, email: e.target.value })
+            }
             className="mb-3 w-full rounded-md border border-gray-300 bg-white px-4 py-3 outline-none transition focus:border-2 focus:border-green-700"
           />
 
@@ -142,6 +208,9 @@ function ProfileUpdate({ setSidebar }) {
             name="username"
             placeholder="UserName"
             value={userData.username}
+            onChange={(e) =>
+              setUserData({ ...userData, username: e.target.value })
+            }
             className="mb-3 w-full rounded-md border border-gray-300 bg-white px-4 py-3 outline-none transition focus:border-2 focus:border-green-700"
           />
 
@@ -150,6 +219,10 @@ function ProfileUpdate({ setSidebar }) {
             type="password"
             name="password"
             placeholder="Password"
+            value={userData.password}
+            onChange={(e) =>
+              setUserData({ ...userData, password: e.target.value })
+            }
             className="mb-3 w-full rounded-md border border-gray-300 bg-white px-4 py-3 outline-none transition focus:border-2 focus:border-green-700"
           />
 
@@ -158,6 +231,8 @@ function ProfileUpdate({ setSidebar }) {
             name="bio"
             placeholder="Bio"
             rows="4"
+            value={userData.bio}
+            onChange={(e) => setUserData({ ...userData, bio: e.target.value })}
             className="mb-5 w-full resize-none rounded-md border border-gray-300 bg-white px-4 py-3 outline-none transition focus:border-2 focus:border-green-700"
           />
 
@@ -165,6 +240,7 @@ function ProfileUpdate({ setSidebar }) {
           <div className="flex justify-between gap-4">
             <button
               type="button"
+              onClick={handleProfileUpdate}
               className="w-full cursor-pointer rounded-md bg-green-700 py-3 font-semibold text-white transition hover:bg-green-800"
             >
               Update
@@ -172,7 +248,7 @@ function ProfileUpdate({ setSidebar }) {
 
             <button
               type="button"
-              onClick={() => handleCancel}
+              onClick={handleCancel}
               className="w-full cursor-pointer rounded-md bg-gray-200 py-3 font-semibold text-gray-700 transition hover:bg-red-500 hover:text-white"
             >
               Cancel

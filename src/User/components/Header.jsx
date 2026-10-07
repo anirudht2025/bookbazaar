@@ -3,6 +3,7 @@ import { FaFacebook, FaInstagram, FaUser } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { FaCaretUp, FaCaretDown } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import axiosInstance from "../../api/axiosInstance";
 
 function Header() {
   const [dropdown, setDropdown] = useState(false);
@@ -17,7 +18,11 @@ function Header() {
       const userObj = JSON.parse(sessionStorage.getItem("user"));
 
       setToken(userToken);
-      setDp(userObj.picture);
+      setDp(
+        userObj.picture?.includes("lh3.googleusercontent")
+          ? userObj.picture
+          : `${axiosInstance.defaults.baseURL}/uploads/${userObj.picture}`,
+      );
       setUserName(userObj.username);
     }
   }, []);

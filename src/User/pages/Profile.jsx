@@ -3,6 +3,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { FaRegEdit } from "react-icons/fa";
 import ProfileUpdate from "../components/ProfileUpdate";
+import axiosInstance from "../../api/axiosInstance";
 
 function Profile() {
   const [username, setUserName] = useState("");
@@ -13,7 +14,11 @@ function Profile() {
     if (sessionStorage.getItem("token") && sessionStorage.getItem("user")) {
       const user = JSON.parse(sessionStorage.getItem("user"));
 
-      setDp(user?.picture);
+      setDp(
+        user?.picture?.includes("lh3.googleusercontent")
+          ? user.picture
+          : `${axiosInstance.defaults.baseURL}/uploads/${user.picture}`,
+      );
       setUserName(user?.username);
       setBio(user?.bio);
     }

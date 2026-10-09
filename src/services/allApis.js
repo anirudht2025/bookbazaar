@@ -19,3 +19,8 @@ export const googleLoginAPI = async (data) => {
 export const profileEditAPI = async (data) => {
   return await apiService("PUT", "/profile-edit", data);
 };
+
+// Add book
+export const addBookAPI = async (data) => {
+  return await apiService("POST", "/books", data);
+};

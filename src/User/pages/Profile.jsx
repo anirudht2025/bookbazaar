@@ -3,6 +3,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { FaRegEdit } from "react-icons/fa";
 import ProfileUpdate from "../components/ProfileUpdate";
+import SellBook from "../components/SellBook";
 import axiosInstance from "../../api/axiosInstance";
 
 function Profile() {
@@ -116,118 +117,7 @@ function Profile() {
 
         <div className="mt-8 text-center">
           {/* SELL BOOK */}
-          {sellStatus && (
-            <div className="rounded-2xl border border-gray-200 bg-gray-100 p-5">
-              <h1 className="mb-5 pt-2 text-center text-2xl font-bold text-green-950">
-                Book Details
-              </h1>
-
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                {/* Left Side */}
-                <div>
-                  <input
-                    type="text"
-                    placeholder="Title"
-                    className="mb-3 w-full rounded-md border border-gray-300 bg-white p-3 outline-none focus:border-2 focus:border-amber-500"
-                  />
-
-                  <input
-                    type="text"
-                    placeholder="Author"
-                    className="mb-3 w-full rounded-md border border-gray-300 bg-white p-3 outline-none focus:border-2 focus:border-amber-500"
-                  />
-
-                  <input
-                    type="text"
-                    placeholder="No. of pages"
-                    className="mb-3 w-full rounded-md border border-gray-300 bg-white p-3 outline-none focus:border-2 focus:border-amber-500"
-                  />
-
-                  <input
-                    type="text"
-                    placeholder="Image URL"
-                    className="mb-3 w-full rounded-md border border-gray-300 bg-white p-3 outline-none focus:border-2 focus:border-amber-500"
-                  />
-
-                  <input
-                    type="text"
-                    placeholder="Price"
-                    className="mb-3 w-full rounded-md border border-gray-300 bg-white p-3 outline-none focus:border-2 focus:border-amber-500"
-                  />
-
-                  <input
-                    type="text"
-                    placeholder="Discount Price"
-                    className="mb-3 w-full rounded-md border border-gray-300 bg-white p-3 outline-none focus:border-2 focus:border-amber-500"
-                  />
-
-                  <textarea
-                    placeholder="Abstract"
-                    rows="8"
-                    className="mb-3 w-full resize-none rounded-md border border-gray-300 bg-white p-3 outline-none focus:border-2 focus:border-amber-500"
-                  />
-                </div>
-
-                {/* Right Side */}
-                <div>
-                  <input
-                    type="text"
-                    placeholder="Publisher"
-                    className="mb-3 w-full rounded-md border border-gray-300 bg-white p-3 outline-none focus:border-2 focus:border-amber-500"
-                  />
-
-                  <input
-                    type="text"
-                    placeholder="Language"
-                    className="mb-3 w-full rounded-md border border-gray-300 bg-white p-3 outline-none focus:border-2 focus:border-amber-500"
-                  />
-
-                  <input
-                    type="text"
-                    placeholder="ISBN"
-                    className="mb-3 w-full rounded-md border border-gray-300 bg-white p-3 outline-none focus:border-2 focus:border-amber-500"
-                  />
-
-                  <input
-                    type="text"
-                    placeholder="Category"
-                    className="mb-3 w-full rounded-md border border-gray-300 bg-white p-3 outline-none focus:border-2 focus:border-amber-500"
-                  />
-
-                  {/* Book Image */}
-                  <label
-                    htmlFor="bookimgfile"
-                    className="mb-4 flex h-40 cursor-pointer items-center justify-center rounded-md border-2 border-dashed border-gray-400 bg-gray-200 transition hover:border-amber-500 hover:bg-amber-50"
-                  >
-                    <input type="file" className="hidden" id="bookimgfile" />
-
-                    <img
-                      src="https://cdn-icons-png.flaticon.com/512/126/126477.png"
-                      alt="Upload book"
-                      className="h-16 w-16 object-contain opacity-70"
-                    />
-                  </label>
-
-                  {/* Buttons */}
-                  <div className="flex justify-between gap-4">
-                    <button
-                      type="button"
-                      className="w-full rounded-md bg-red-800 px-4 py-3 font-semibold text-white transition hover:bg-red-900"
-                    >
-                      RESET
-                    </button>
-
-                    <button
-                      type="button"
-                      className="w-full rounded-md bg-green-800 px-4 py-3 font-semibold text-white transition hover:bg-green-900"
-                    >
-                      SUBMIT
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+          {sellStatus && <SellBook />}
 
           {/* BOOK STATUS */}
           {bookStatus && (

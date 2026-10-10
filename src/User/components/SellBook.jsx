@@ -24,22 +24,6 @@ function SellBook() {
   const [preview, setPreview] = useState("");
   const [previewList, setPreviewList] = useState([]);
 
-  //   const handleFileUpload = (e) => {
-  //     const fileBlob = e.target.files[0];
-  //     const uploadedFiles = book.uploadedImages;
-
-  //     uploadedFiles.push(fileBlob);
-
-  //     setBook({ ...book, uploadedImages: uploadedFiles });
-  //     setPreview(URL.createObjectURL(fileBlob));
-
-  //     const demoPreviewList = [...previewList];
-  //     demoPreviewList.push(URL.createObjectURL(fileBlob));
-
-  //     setPreviewList(demoPreviewList);
-  //     console.log(previewList);
-  //   };
-
   const handleFileUpload = (e) => {
     const fileBlob = e.target.files[0];
 

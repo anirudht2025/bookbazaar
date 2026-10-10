@@ -1,6 +1,9 @@
 import React from "react";
 import { useState } from "react";
 import { FaPlus } from "react-icons/fa";
+import { addBookAPI } from "../../services/allApis";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function SellBook() {
   const [book, setBook] = useState({
@@ -21,28 +24,136 @@ function SellBook() {
   const [preview, setPreview] = useState("");
   const [previewList, setPreviewList] = useState([]);
 
+  //   const handleFileUpload = (e) => {
+  //     const fileBlob = e.target.files[0];
+  //     const uploadedFiles = book.uploadedImages;
+
+  //     uploadedFiles.push(fileBlob);
+
+  //     setBook({ ...book, uploadedImages: uploadedFiles });
+  //     setPreview(URL.createObjectURL(fileBlob));
+
+  //     const demoPreviewList = [...previewList];
+  //     demoPreviewList.push(URL.createObjectURL(fileBlob));
+
+  //     setPreviewList(demoPreviewList);
+  //     console.log(previewList);
+  //   };
+
   const handleFileUpload = (e) => {
     const fileBlob = e.target.files[0];
-    const uploadedFiles = book.uploadedImages;
+
+    if (!fileBlob) return;
+
+    const uploadedFiles = [...book.uploadedImages];
+
+    if (uploadedFiles.length >= 3) {
+      alert("Maximum 3 images allowed!");
+      e.target.value = "";
+      return;
+    }
 
     uploadedFiles.push(fileBlob);
-
     setBook({ ...book, uploadedImages: uploadedFiles });
+
     setPreview(URL.createObjectURL(fileBlob));
 
     const demoPreviewList = [...previewList];
     demoPreviewList.push(URL.createObjectURL(fileBlob));
-
     setPreviewList(demoPreviewList);
-    console.log(previewList);
+
+    e.target.value = "";
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     console.log(book);
+
+    const {
+      title,
+      author,
+      noOfPages,
+      imageUrl,
+      price,
+      discountPrice,
+      abstract,
+      publisher,
+      language,
+      isbn,
+      category,
+      uploadedImages,
+    } = book;
+
+    if (
+      !title ||
+      !author ||
+      !noOfPages ||
+      !imageUrl ||
+      !price ||
+      !discountPrice ||
+      !abstract ||
+      !publisher ||
+      !language ||
+      !isbn ||
+      !category ||
+      uploadedImages.length === 0
+    ) {
+      toast.warning("Enter Valid Inputs!!");
+    } else {
+      console.log("API CALL");
+
+      const formData = new FormData();
+
+      for (let key in book) {
+        if (key !== "uploadedImages") {
+          formData.append(key, book[key]);
+        } else {
+          book.uploadedImages.forEach((img) => {
+            formData.append("uploadedImages", img);
+          });
+        }
+      }
+
+      try {
+        const response = await addBookAPI(formData);
+
+        if (response.status === 200) {
+          toast.success("Book Added Successfully!!");
+
+          setBook({
+            title: "",
+            author: "",
+            noOfPages: "",
+            imageUrl: "",
+            price: "",
+            discountPrice: "",
+            abstract: "",
+            publisher: "",
+            language: "",
+            isbn: "",
+            category: "",
+            uploadedImages: [],
+          });
+
+          setPreview("");
+          setPreviewList([]);
+        }
+      } catch (err) {
+        console.log(err);
+        toast.error("Failed to add book!");
+      }
+    }
   };
 
   return (
     <div className="rounded-2xl border border-gray-200 bg-gray-100 p-5">
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        theme="colored"
+        closeOnClick
+        pauseOnHover
+      />
+
       <h1 className="mb-5 pt-2 text-center text-2xl font-bold text-green-950">
         Book Details
       </h1>
@@ -144,39 +255,54 @@ function SellBook() {
           />
 
           {/* Book Image */}
-          <label
-            htmlFor="bookimgfile"
-            className="mb-4 flex h-40 cursor-pointer items-center justify-center rounded-md border-2 border-dashed border-gray-400 bg-gray-200 transition hover:border-amber-500 hover:bg-amber-50"
-          >
-            <input
-              type="file"
-              className="hidden"
-              id="bookimgfile"
-              onChange={handleFileUpload}
-              multiple
-              accept="image/*"
-            />
+          {!preview ? (
+            <label
+              htmlFor="bookimgfile"
+              className="mb-4 flex h-40 cursor-pointer items-center justify-center rounded-md border-2 border-dashed border-gray-400 bg-gray-200 transition hover:border-amber-500 hover:bg-amber-50"
+            >
+              <input
+                type="file"
+                onChange={handleFileUpload}
+                className="hidden"
+                id="bookimgfile"
+                accept="image/*"
+              />
 
-            <img
-              src="https://cdn-icons-png.flaticon.com/512/126/126477.png"
-              alt="Upload book"
-              className="h-16 w-16 object-contain opacity-70"
-            />
-          </label>
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/126/126477.png"
+                alt="Upload book"
+                className="h-16 w-16 object-contain opacity-70"
+              />
+            </label>
+          ) : (
+            <div className="flex justify-center bg-gray-200 p-4">
+              <img
+                src={preview}
+                alt="Main book preview"
+                className="h-50 object-contain"
+              />
+            </div>
+          )}
+
           <div className="p-2">
             {preview && (
-              <div className="flex justify-around items-center">
+              <div className="flex items-center justify-around gap-2">
                 {previewList.map((item, index) => (
-                  <img key={index} src={item} className="h-25" alt="preview" />
+                  <img
+                    key={index}
+                    src={item}
+                    className="h-25 object-cover"
+                    alt={`Book preview ${index + 1}`}
+                  />
                 ))}
 
                 {previewList.length < 3 && (
-                  <label htmlFor="previewinp">
+                  <label htmlFor="previewinp" className="cursor-pointer">
                     <input
                       type="file"
                       className="hidden"
+                      onChange={handleFileUpload}
                       id="previewinp"
-                      onChange={(e) => handleFileUpload(e)}
                       accept="image/*"
                     />
                     <FaPlus className="text-xl" />

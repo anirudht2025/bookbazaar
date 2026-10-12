@@ -5,6 +5,8 @@ import Preloader from "../components/Preloader";
 import Header from "../User/components/Header";
 import Footer from "../User/components/Footer";
 
+import { latestBooksAPI } from "../services/allApis";
+
 function Home() {
   const [loadStatus, setLoadStatus] = useState(true);
 
@@ -15,6 +17,21 @@ function Home() {
 
     return () => clearTimeout(timer);
   }, []);
+
+  const [latest, setLatest] = useState([]);
+
+  useEffect(() => {
+    handleLatestBooks();
+  }, []);
+
+  const handleLatestBooks = async () => {
+    const response = await latestBooksAPI();
+    console.log(response);
+
+    if (response.status === 200) {
+      setLatest(response.data);
+    }
+  };
 
   return (
     <>
@@ -63,22 +80,32 @@ function Home() {
 
             {/* Books */}
             <div className="mt-8 flex flex-wrap justify-center gap-8">
-              {/* CARD */}
-              <div className="w-64 overflow-hidden rounded-xl bg-white shadow-lg transition-all hover:-translate-y-1 hover:shadow-xl">
-                <img
-                  src="https://m.media-amazon.com/images/I/91A6EgLH+2L.jpg"
-                  alt="Harry Potter"
-                  className="h-80 w-full object-cover"
-                />
+              {latest.length > 0 ? (
+                latest.map((item) => (
+                  <div key={item._id}>
+                    {/* CARD */}
+                    <div className="w-64 overflow-hidden rounded-xl bg-white shadow-lg transition-all hover:-translate-y-1 hover:shadow-xl">
+                      <img
+                        src={item.imageUrl}
+                        alt={item.title}
+                        className="h-80 w-full object-cover"
+                      />
 
-                <div className="p-4 text-center">
-                  <h3 className="text-lg font-semibold text-slate-900">
-                    Harry Potter
-                  </h3>
+                      <div className="p-4 text-center">
+                        <h3 className="text-lg font-semibold text-slate-900">
+                          {item.title}
+                        </h3>
 
-                  <p className="mt-2 text-lg font-bold text-green-700">₹500</p>
-                </div>
-              </div>
+                        <p className="mt-2 text-lg font-bold text-green-700">
+                          ₹{item.price}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="text-lg text-gray-500">No books available</p>
+              )}
             </div>
 
             {/* Explore More */}

@@ -24,3 +24,13 @@ export const profileEditAPI = async (data) => {
 export const addBookAPI = async (data) => {
   return await apiService("POST", "/books", data);
 };
+
+// Get latest books
+export const latestBooksAPI = async () => {
+  return await apiService("GET", "/latest-books", "");
+};
+
+// Book list
+export const bookListAPI = async () => {
+  return await apiService("GET", "/booklist", "");
+};

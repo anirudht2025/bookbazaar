@@ -1,10 +1,28 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { GiHamburgerMenu } from "react-icons/gi";
 
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 
+import { bookListAPI } from "../../services/allApis";
+
 function Books() {
+  const [bookList, setBookList] = useState([]);
+  const [filters, setFilters] = useState([]);
+
+  useEffect(() => {
+    handleBookList();
+  }, []);
+
+  const handleBookList = async () => {
+    const response = await bookListAPI();
+
+    if (response.status === 200) {
+      setBookList(response.data);
+      setFilters(response.data.map((item) => item.category));
+    }
+  };
+
   return (
     <>
       <Header />
@@ -28,7 +46,6 @@ function Books() {
           <div className="mt-8">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold">Filters</h2>
-
               <GiHamburgerMenu className="text-2xl" />
             </div>
 
@@ -36,24 +53,52 @@ function Books() {
               <input type="radio" name="filter" />
               No-Filter
             </label>
+
+            {filters.map((item, index) => (
+              <label key={index} className="mt-3 flex items-center gap-2">
+                <input type="radio" name="filter" value={item} />
+                {item}
+              </label>
+            ))}
           </div>
 
           {/* Books */}
           <div className="mt-8 flex flex-wrap justify-center gap-8">
-            {/* Book Card */}
-            <div className="w-64 overflow-hidden rounded-lg shadow-lg">
-              <img
-                src="https://m.media-amazon.com/images/I/91A6EgLH+2L.jpg"
-                alt="Harry Potter"
-                className="h-80 w-full object-cover"
-              />
+            {bookList.length > 0 ? (
+              bookList.map((item) => (
+                /* Book Card */
+                <div
+                  key={item._id}
+                  className="w-64 overflow-hidden rounded-lg shadow-lg"
+                >
+                  <img
+                    src={item.imageUrl}
+                    alt={item.title}
+                    className="h-80 w-full object-cover"
+                  />
 
-              <div className="p-4 text-center">
-                <h3 className="text-lg font-semibold">Harry Potter</h3>
+                  <div className="p-4 text-center">
+                    <h3 className="text-lg font-semibold">{item.title}</h3>
 
-                <p className="mt-2 text-lg font-bold text-green-700">₹500</p>
+                    <p className="mt-2 text-lg font-bold text-green-700">
+                      ₹{item.price}
+                    </p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="flex w-full flex-col items-center">
+                <img
+                  src="https://assets-v2.lottiefiles.com/a/0953d504-117d-11ee-aa49-1f149204cb5f/9uZcoEJaoF.gif"
+                  alt="No books available"
+                  className="h-64 w-64 object-contain"
+                />
+
+                <p className="text-lg font-medium text-gray-500">
+                  No books available
+                </p>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </section>

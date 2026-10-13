@@ -1,16 +1,32 @@
+// Imports
 import React, { useState, useEffect } from "react";
+import { FaRegEdit } from "react-icons/fa";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { FaRegEdit } from "react-icons/fa";
 import ProfileUpdate from "../components/ProfileUpdate";
 import SellBook from "../components/SellBook";
+
 import axiosInstance from "../../api/axiosInstance";
+import { userAddedBooksAPI, deleteBooksAPI } from "../../services/allApis";
 
 function Profile() {
+  // States
   const [username, setUserName] = useState("");
   const [dp, setDp] = useState("");
   const [bio, setBio] = useState("");
 
+  const [sidebar, setSidebar] = useState(false);
+
+  const [sellStatus, setSellStatus] = useState(true);
+  const [bookStatus, setBookStatus] = useState(false);
+  const [purchaseStatus, setPurchaseStatus] = useState(false);
+
+  const [userBookList, setUserBookList] = useState([]);
+
+  // Profile Details
   useEffect(() => {
     if (sessionStorage.getItem("token") && sessionStorage.getItem("user")) {
       const user = JSON.parse(sessionStorage.getItem("user"));
@@ -20,17 +36,50 @@ function Profile() {
           ? user.picture
           : `${axiosInstance.defaults.baseURL}/uploads/${user.picture}`,
       );
+
       setUserName(user?.username);
       setBio(user?.bio);
     }
   }, []);
 
-  const [sidebar, setSidebar] = useState(false);
+  // Fetch User Added Books
+  useEffect(() => {
+    if (sessionStorage.getItem("token")) {
+      handleUserAddedBooks();
+    }
+  }, [bookStatus]);
 
-  const [sellStatus, setSellStatus] = useState(true);
-  const [bookStatus, setBookStatus] = useState(false);
-  const [purchaseStatus, setPurchaseStatus] = useState(false);
+  const handleUserAddedBooks = async () => {
+    try {
+      const response = await userAddedBooksAPI();
+      console.log("User Added Books Response:", response.data);
 
+      if (response.status === 200) {
+        setUserBookList(response.data);
+      }
+    } catch (err) {
+      console.log("Failed to fetch user books:", err);
+    }
+  };
+
+  // Delete User Added Book
+  const handleDeleteBook = async (id) => {
+    try {
+      const response = await deleteBooksAPI(id);
+
+      if (response.status === 200) {
+        toast.success("Removed!!");
+        handleUserAddedBooks();
+      } else {
+        toast.error("Remove Book Failed!!");
+      }
+    } catch (err) {
+      console.log(err);
+      toast.error("Something Went Wrong!!");
+    }
+  };
+
+  // Tailwind Classes
   const trueClass = "p-3 border-t-2 border-s-2 border-e-2";
   const falseClass = "p-3 border-b-2";
 
@@ -122,43 +171,52 @@ function Profile() {
           {/* BOOK STATUS */}
           {bookStatus && (
             <div className="p-2">
-              <div className="flex flex-col gap-6 border p-4 md:flex-row md:items-center md:justify-between">
-                {/* Book Details */}
-                <div className="md:flex-1">
-                  <h1 className="text-xl font-bold">Harry Potter</h1>
+              {userBookList.length > 0 ? (
+                userBookList.map((item) => (
+                  <div
+                    key={item._id}
+                    className="mb-6 flex flex-col gap-6 border p-4 md:flex-row md:items-center md:justify-between"
+                  >
+                    {/* Book Details */}
+                    <div className="md:flex-1">
+                      <h1 className="text-xl font-bold">{item.title}</h1>
 
-                  <h4 className="font-bold text-green-600">₹500</h4>
+                      <h4 className="font-bold text-green-600">
+                        ₹{item.price}
+                      </h4>
 
-                  <p className="mt-2 text-justify">
-                    Harry Potter is a young wizard who discovers his magical
-                    heritage and begins an exciting journey at Hogwarts School
-                    of Witchcraft and Wizardry. Along the way, he makes new
-                    friends, faces dangerous challenges, and uncovers secrets
-                    about his past. The story is filled with magic, friendship,
-                    adventure, and unforgettable moments.
-                  </p>
+                      <p className="mt-2 text-justify">{item.abstract}</p>
 
-                  {/* Status */}
-                  <div className="mt-3 flex items-center gap-4">
-                    <span className="rounded-md border-2 border-green-600 px-4 py-2 font-bold text-green-600">
-                      APPROVED
-                    </span>
+                      {/* Status */}
+                      <div className="mt-3 flex items-center gap-4">
+                        <span className="rounded-md border-2 border-green-600 px-4 py-2 font-bold text-green-600">
+                          {item.status?.toUpperCase() || "PENDING"}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Book Image */}
+                    <div className="flex w-full flex-col items-center gap-3 md:w-32">
+                      <img
+                        src={item.imageUrl}
+                        alt={item.title}
+                        className="h-40 w-28 rounded-md object-cover"
+                      />
+
+                      <button
+                        onClick={() => handleDeleteBook(item._id)}
+                        className="w-28 rounded-md bg-red-500 px-3 py-2 font-semibold text-white hover:cursor-pointer hover:bg-red-700"
+                      >
+                        REMOVE
+                      </button>
+                    </div>
                   </div>
-                </div>
-
-                {/* Book Image */}
-                <div className="flex w-full flex-col items-center gap-3 md:w-32">
-                  <img
-                    src="https://m.media-amazon.com/images/I/91A6EgLH+2L.jpg"
-                    alt="Harry Potter"
-                    className="h-40 w-28 rounded-md object-cover"
-                  />
-
-                  <button className="w-28 rounded-md bg-red-500 px-3 py-2 font-semibold text-white hover:bg-red-700 hover:cursor-pointer">
-                    REMOVE
-                  </button>
-                </div>
-              </div>
+                ))
+              ) : (
+                <p className="text-gray-500">
+                  You haven't added any books yet.
+                </p>
+              )}
             </div>
           )}
 

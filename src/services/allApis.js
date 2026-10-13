@@ -34,3 +34,13 @@ export const latestBooksAPI = async () => {
 export const bookListAPI = async () => {
   return await apiService("GET", "/booklist", "");
 };
+
+// User added books
+export const userAddedBooksAPI = async () => {
+  return await apiService("GET", "/user-books");
+};
+
+// Delete user added books
+export const deleteBooksAPI = async (bid) => {
+  return await apiService("DELETE", `/delete-book/${bid}`, {});
+};

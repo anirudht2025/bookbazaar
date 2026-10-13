@@ -9,9 +9,12 @@ import { bookListAPI } from "../../services/allApis";
 function Books() {
   const [bookList, setBookList] = useState([]);
   const [filters, setFilters] = useState([]);
+  const [dummyList, setDummyList] = useState([]);
 
   useEffect(() => {
-    handleBookList();
+    if (sessionStorage.getItem("token")) {
+      handleBookList();
+    }
   }, []);
 
   const handleBookList = async () => {
@@ -19,7 +22,18 @@ function Books() {
 
     if (response.status === 200) {
       setBookList(response.data);
-      setFilters(response.data.map((item) => item.category));
+      setDummyList(response.data);
+      setFilters([...new Set(response.data.map((item) => item.category))]);
+    }
+  };
+
+  const filterBooks = async (filter) => {
+    console.log(filter);
+    if (filter) {
+      const filterBooks = dummmyList.filter((item) => item?.category == filter);
+      setBookList(filterBooks);
+    } else {
+      setBookList(dummyList);
     }
   };
 
@@ -50,13 +64,22 @@ function Books() {
             </div>
 
             <label className="mt-4 flex items-center gap-2">
-              <input type="radio" name="filter" />
+              <input
+                type="radio"
+                name="filter"
+                onChange={() => filterBooks("")}
+              />
               No-Filter
             </label>
 
             {filters.map((item, index) => (
               <label key={index} className="mt-3 flex items-center gap-2">
-                <input type="radio" name="filter" value={item} />
+                <input
+                  type="radio"
+                  name="filter"
+                  value={item}
+                  onChange={() => filterBooks(item)}
+                />
                 {item}
               </label>
             ))}

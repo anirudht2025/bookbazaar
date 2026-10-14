@@ -11,6 +11,13 @@ function Books() {
   const [filters, setFilters] = useState([]);
   const [dummyList, setDummyList] = useState([]);
 
+  const handleSearch = (keyword) => {
+    const books = dummyList.filter((item) =>
+      item.title.toLowerCase().includes(keyword.toLowerCase()),
+    );
+    setBookList(books);
+  };
+
   useEffect(() => {
     if (sessionStorage.getItem("token")) {
       handleBookList();
@@ -27,11 +34,12 @@ function Books() {
     }
   };
 
-  const filterBooks = async (filter) => {
-    console.log(filter);
+  const filterBooks = (filter) => {
     if (filter) {
-      const filterBooks = dummmyList.filter((item) => item?.category == filter);
-      setBookList(filterBooks);
+      const filteredBooks = dummyList.filter(
+        (item) => item?.category === filter,
+      );
+      setBookList(filteredBooks);
     } else {
       setBookList(dummyList);
     }
@@ -52,6 +60,7 @@ function Books() {
             <input
               type="text"
               placeholder="Enter Title to search"
+              onChange={(e) => handleSearch(e.target.value)}
               className="w-full max-w-2xl border px-4 py-3 outline-none"
             />
           </div>

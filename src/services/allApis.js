@@ -44,3 +44,8 @@ export const userAddedBooksAPI = async () => {
 export const deleteBooksAPI = async (bid) => {
   return await apiService("DELETE", `/delete-book/${bid}`, {});
 };
+
+// Get purchased books by the logged-in user
+export const purchasedBooksAPI = async () => {
+  return await apiService("GET", "/purchased-books");
+};

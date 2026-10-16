@@ -1,22 +1,39 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { GiHamburgerMenu } from "react-icons/gi";
 
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 
+import { searchContext } from "../../contextAPI/SharedContext";
+
 import { bookListAPI } from "../../services/allApis";
+
+import { Link } from "react-router-dom";
 
 function Books() {
   const [bookList, setBookList] = useState([]);
   const [filters, setFilters] = useState([]);
   const [dummyList, setDummyList] = useState([]);
 
-  const handleSearch = (keyword) => {
+  const { search, setSearch } = useContext(searchContext);
+
+  // const handleSearch = (keyword) => {
+  //   const books = dummyList.filter((item) =>
+  //     item.title.toLowerCase().includes(keyword.toLowerCase()),
+  //   );
+  //   setBookList(books);
+  // };
+
+  const handleSearch = () => {
     const books = dummyList.filter((item) =>
-      item.title.toLowerCase().includes(keyword.toLowerCase()),
+      item.title.toLowerCase().includes(search.toLowerCase()),
     );
     setBookList(books);
   };
+
+  useEffect(() => {
+    handleSearch();
+  }, [search, dummyList]);
 
   useEffect(() => {
     if (sessionStorage.getItem("token")) {
@@ -60,7 +77,9 @@ function Books() {
             <input
               type="text"
               placeholder="Enter Title to search"
-              onChange={(e) => handleSearch(e.target.value)}
+              // onChange={(e) => handleSearch(e.target.value)}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
               className="w-full max-w-2xl border px-4 py-3 outline-none"
             />
           </div>
@@ -99,7 +118,8 @@ function Books() {
             {bookList.length > 0 ? (
               bookList.map((item) => (
                 /* Book Card */
-                <div
+                <Link
+                  to={`/books/${item._id}`}
                   key={item._id}
                   className="w-64 overflow-hidden rounded-lg shadow-lg"
                 >
@@ -116,7 +136,7 @@ function Books() {
                       ₹{item.price}
                     </p>
                   </div>
-                </div>
+                </Link>
               ))
             ) : (
               <div className="flex w-full flex-col items-center">

@@ -49,3 +49,8 @@ export const deleteBooksAPI = async (bid) => {
 export const purchasedBooksAPI = async () => {
   return await apiService("GET", "/purchased-books");
 };
+
+// Get details of a specific book
+export const getBookByIdAPI = async (bid) => {
+  return await apiService("GET", `/books/${bid}`);
+};

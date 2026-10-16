@@ -5,6 +5,13 @@ import Preloader from "../components/Preloader";
 import Header from "../User/components/Header";
 import Footer from "../User/components/Footer";
 
+import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { searchContext } from "../contextAPI/SharedContext";
+
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import { latestBooksAPI } from "../services/allApis";
 
 function Home() {
@@ -33,12 +40,28 @@ function Home() {
     }
   };
 
+  const { search, setSearch } = useContext(searchContext);
+  const navigate = useNavigate();
+
+  const handleSearchNavigate = () => {
+    if (sessionStorage.getItem("token")) {
+      if (search.trim()) {
+        navigate("/books");
+      } else {
+        toast.warning("Enter valid search key!!");
+      }
+    } else {
+      toast.info("Please Login First!!");
+      navigate("/auth");
+    }
+  };
   return (
     <>
       {loadStatus ? (
         <Preloader />
       ) : (
         <>
+          <ToastContainer />
           <Header />
 
           {/* HERO */}
@@ -57,10 +80,15 @@ function Home() {
                   <input
                     type="text"
                     placeholder="Search books"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
                     className="w-full rounded-lg bg-white px-4 py-3 pr-12 text-gray-600 outline-none"
                   />
 
-                  <FaSearch className="absolute right-4 top-1/2 -translate-y-1/2 text-black" />
+                  <FaSearch
+                    onClick={handleSearchNavigate}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-black transition-colors duration-200 hover:text-green-600"
+                  />
                 </div>
               </div>
             </div>

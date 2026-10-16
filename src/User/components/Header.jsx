@@ -50,26 +50,29 @@ function Header() {
 
           {/* Social + Login + User */}
           <div className="ml-auto flex items-center gap-5">
-            <a
-              href="#"
-              className="text-slate-500 transition-colors hover:text-blue-600"
-            >
-              <FaFacebook size={19} />
-            </a>
+            {/* Social Media Icons */}
+            <div className="hidden items-center gap-5 min-[50rem]:flex">
+              <a
+                href="#"
+                className="text-slate-500 transition-colors hover:text-blue-600"
+              >
+                <FaFacebook size={19} />
+              </a>
 
-            <a
-              href="#"
-              className="text-slate-500 transition-colors hover:text-pink-500"
-            >
-              <FaInstagram size={19} />
-            </a>
+              <a
+                href="#"
+                className="text-slate-500 transition-colors hover:text-pink-500"
+              >
+                <FaInstagram size={19} />
+              </a>
 
-            <a
-              href="#"
-              className="text-slate-500 transition-colors hover:text-black"
-            >
-              <FaXTwitter size={18} />
-            </a>
+              <a
+                href="#"
+                className="text-slate-500 transition-colors hover:text-black"
+              >
+                <FaXTwitter size={18} />
+              </a>
+            </div>
 
             {/* Login */}
             {!token && (

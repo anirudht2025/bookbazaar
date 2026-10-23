@@ -13,6 +13,7 @@ import {
   FaBuilding,
   FaBarcode,
 } from "react-icons/fa";
+import { loadStripe } from "@stripe/stripe-js";
 
 function BookDetails() {
   const { bid } = useParams();
@@ -61,6 +62,12 @@ function BookDetails() {
     setSelectedImage(
       `${axiosInstance.defaults.baseURL}/uploads/${bookDetail.uploadedImages[nextIndex]}`,
     );
+  };
+
+  const handlePurchase = async (book) => {
+    console.log(book);
+    const stripe = await loadStripe(import.meta.env.VITE_STRIPE_PK);
+    console.log(stripe);
   };
 
   if (!bookDetail) {
@@ -223,7 +230,7 @@ function BookDetails() {
             {/* Action Buttons */}
             <div className="flex flex-col gap-3 sm:flex-row">
               <button
-                onClick={() => alert("Purchase functionality coming soon!")}
+                onClick={handlePurchase}
                 className="flex flex-1 items-center justify-center gap-3 rounded-xl bg-green-700 px-6 py-4 font-semibold text-white shadow-lg transition hover:bg-green-800 hover:shadow-xl"
               >
                 <FaShoppingCart />
@@ -339,4 +346,3 @@ function BookDetails() {
 }
 
 export default BookDetails;
-  

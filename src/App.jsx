@@ -12,6 +12,10 @@ import BookDetails from "./User/pages/BookDetails";
 import Contact from "./User/pages/Contact";
 import Profile from "./User/pages/Profile";
 
+// Payment
+import PaymentSuccess from "./User/pages/PaymentSuccess";
+import PaymentFailed from "./User/pages/PaymentFailed";
+
 // Admin
 import Dashboard from "./Admin/pages/Dashboard";
 import Resources from "./Admin/pages/Resources";
@@ -33,6 +37,10 @@ function App() {
         <Route path="/books/:bid" element={<BookDetails />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/profile" element={<Profile />} />
+
+        {/* Payment */}
+        <Route path="/success" element={<PaymentSuccess />} />
+        <Route path="/failed" element={<PaymentFailed />} />
 
         {/* Admin */}
         <Route path="/admin/dashboard" element={<Dashboard />} />

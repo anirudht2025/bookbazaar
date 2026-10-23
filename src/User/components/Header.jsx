@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { FaFacebook, FaInstagram, FaUser } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { FaCaretUp, FaCaretDown } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axiosInstance from "../../api/axiosInstance";
 
 function Header() {
@@ -10,6 +10,7 @@ function Header() {
   const [token, setToken] = useState("");
   const [dp, setDp] = useState("");
   const [userName, setUserName] = useState("");
+  const nav = useNavigate();
 
   useEffect(() => {
     if (sessionStorage.getItem("token") && sessionStorage.getItem("user")) {
@@ -26,6 +27,11 @@ function Header() {
       setUserName(userObj.username);
     }
   }, []);
+
+  const logout = () => {
+    sessionStorage.clear();
+    nav("/auth");
+  };
 
   return (
     <>
@@ -119,7 +125,10 @@ function Header() {
                       Profile
                     </Link>
 
-                    <p className="cursor-pointer px-4 py-2 text-sm text-red-600 hover:bg-red-500 hover:text-white">
+                    <p
+                      onClick={logout}
+                      className="cursor-pointer px-4 py-2 text-sm text-red-600 hover:bg-red-500 hover:text-white"
+                    >
                       Logout
                     </p>
                   </div>

@@ -54,3 +54,18 @@ export const purchasedBooksAPI = async () => {
 export const getBookByIdAPI = async (bid) => {
   return await apiService("GET", `/books/${bid}`);
 };
+
+// Book payment
+export const bookPaymentAPI = async (bid) => {
+  return await apiService("GET", `/payment/${bid}`);
+};
+
+// Admin - List all books for admin
+export const adminAllBookApPI = async () => {
+  return await apiService("GET", "/admin/allbooks");
+};
+
+// Approve book: admin
+export const approveBookAPI = async (bid) => {
+  return await apiService("GET", `/admin/approve/${bid}`);
+};

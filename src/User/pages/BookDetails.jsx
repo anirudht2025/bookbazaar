@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useParams } from "react-router-dom";
-import { getBookByIdAPI } from "../../services/allApis";
+import { bookPaymentAPI, getBookByIdAPI } from "../../services/allApis";
 import axiosInstance from "../../api/axiosInstance";
 import {
   FaBookOpen,
@@ -68,6 +68,12 @@ function BookDetails() {
     console.log(book);
     const stripe = await loadStripe(import.meta.env.VITE_STRIPE_PK);
     console.log(stripe);
+
+    const response = await bookPaymentAPI(book._id);
+    console.log(response);
+
+    // window.location.href = response.data.url;
+    window.open(response.data.url, "_blank");
   };
 
   if (!bookDetail) {
@@ -230,7 +236,7 @@ function BookDetails() {
             {/* Action Buttons */}
             <div className="flex flex-col gap-3 sm:flex-row">
               <button
-                onClick={handlePurchase}
+                onClick={() => handlePurchase(bookDetail)}
                 className="flex flex-1 items-center justify-center gap-3 rounded-xl bg-green-700 px-6 py-4 font-semibold text-white shadow-lg transition hover:bg-green-800 hover:shadow-xl"
               >
                 <FaShoppingCart />

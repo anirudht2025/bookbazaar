@@ -91,7 +91,7 @@ function Auth() {
         toast.success("Login Successful!");
 
         if (response.data.user.role === "admin") {
-          nav("/admin");
+          nav("/admin/dashboard");
         } else {
           nav("/");
         }

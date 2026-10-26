@@ -1,13 +1,48 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AdminHeader from "../components/AdminHeader";
 import Footer from "../../User/components/Footer";
 import AdminSidebar from "../components/AdminSidebar";
+import { adminAllBookApPI, approveBookAPI } from "../../services/allApis";
 
 function Resources() {
   const [toggle, setToggle] = useState(true);
+  const [allBooks, setAllBooks] = useState([]);
 
   const trueStyle = "border-s-1 border-t-1 border-e-1 p-3";
   const falseStyle = "border-b-1 p-3";
+
+  useEffect(() => {
+    handleAllBooks();
+  }, []);
+
+  const handleAllBooks = async () => {
+    try {
+      const response = await adminAllBookApPI();
+
+      if (response.status === 200) {
+        setAllBooks(response.data);
+      }
+    } catch (error) {
+      console.log("Failed to fetch books:", error);
+    }
+  };
+
+  // Approve Book
+  const handleApproveBook = async (bid) => {
+    try {
+      const response = await approveBookAPI(bid);
+
+      if (response.status === 200) {
+        setAllBooks((prevBooks) =>
+          prevBooks.map((book) =>
+            book._id === bid ? { ...book, status: "approved" } : book,
+          ),
+        );
+      }
+    } catch (error) {
+      console.log("Failed to approve book:", error);
+    }
+  };
 
   return (
     <>
@@ -21,7 +56,7 @@ function Resources() {
           </div>
 
           {/* Resources */}
-          <div className="p-3 md:col-span-9">
+          <div className="p-7.5 md:col-span-9">
             <h1 className="text-center text-3xl font-semibold">Resources</h1>
 
             {/* Toggle */}
@@ -34,120 +69,120 @@ function Resources() {
               </button>
 
               <button
-                className={toggle ? falseStyle : trueStyle}
+                className={!toggle ? trueStyle : falseStyle}
                 onClick={() => setToggle(false)}
               >
                 Books
               </button>
             </div>
 
+            {/* Users */}
             {toggle ? (
-              /* Users */
               <div className="flex flex-wrap justify-around gap-4">
-                {/* User 1 */}
-                <div className="w-[20rem] rounded-md border border-gray-200 bg-gray-100 p-4 shadow-md">
-                  <h1 className="my-2 text-center font-semibold">
-                    User ID : 787809056789
-                  </h1>
-
-                  <div className="flex flex-col items-center">
-                    <img
-                      src="https://i.pravatar.cc/150?img=12"
-                      className="h-24 w-24 rounded-full object-cover"
-                      alt="user"
-                    />
-
-                    <h1 className="mt-2 text-center text-lg font-bold">
-                      User Name
-                    </h1>
-
-                    <p className="text-center text-gray-600">user@gmail.com</p>
-
-                    <button className="mt-3 w-full rounded-sm bg-red-600 p-2 text-white hover:bg-red-700">
-                      Remove
-                    </button>
-                  </div>
-                </div>
-
-                {/* User 2 */}
-                {/* <div className="w-[20rem] rounded-md border border-gray-200 bg-gray-100 p-4 shadow-md">
-                  <h1 className="my-2 text-center font-semibold">
-                    User ID : 787809056790
-                  </h1>
-
-                  <div className="flex flex-col items-center">
-                    <img
-                      src="https://i.pravatar.cc/150?img=32"
-                      className="h-24 w-24 rounded-full object-cover"
-                      alt="user"
-                    />
-
-                    <h1 className="mt-2 text-center text-lg font-bold">
-                      Another User
-                    </h1>
-
-                    <p className="text-center text-gray-600">
-                      another@gmail.com
-                    </p>
-
-                    <button className="mt-3 w-full rounded-sm bg-red-600 p-2 text-white hover:bg-red-700">
-                      Remove
-                    </button>
-                  </div>
-                </div> */}
+                <p className="text-gray-500">
+                  User management will be displayed here.
+                </p>
               </div>
             ) : (
               /* Books */
-              <div className="flex flex-wrap justify-around gap-4">
-                {/* Book 1 */}
-                <div className="w-[20rem] rounded-md border border-gray-200 bg-gray-100 p-4 shadow-md">
-                  <h1 className="my-2 text-center font-semibold">
-                    Book ID : 987654321
-                  </h1>
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                {allBooks.length > 0 ? (
+                  allBooks.map((book) => (
+                    <div
+                      key={book._id}
+                      className="group overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+                    >
+                      {/* Book Cover */}
+                      <div className="relative flex h-56 items-center justify-center overflow-hidden bg-gray-100 p-5">
+                        <img
+                          src={book.imageUrl}
+                          alt={book.title}
+                          className="h-full max-w-full rounded-lg object-contain shadow-md transition-transform duration-300 group-hover:scale-105"
+                        />
 
-                  <div className="flex flex-col items-center">
-                    <img
-                      src="https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&w=500&q=80"
-                      className="h-48 w-[60%] object-cover"
-                      alt="Harry Potter"
-                    />
+                        {/* Status Badge */}
+                        <span
+                          className={`absolute right-3 top-3 rounded-full px-3 py-1 text-xs font-semibold capitalize ${
+                            book.status === "approved"
+                              ? "bg-green-100 text-green-700"
+                              : book.status === "sold"
+                                ? "bg-blue-100 text-blue-700"
+                                : "bg-amber-100 text-amber-700"
+                          }`}
+                        >
+                          {book.status || "Pending"}
+                        </span>
+                      </div>
 
-                    <h1 className="mt-2 text-center text-lg font-bold">
-                      Harry Potter
-                    </h1>
+                      {/* Book Details */}
+                      <div className="p-5">
+                        <h2 className="line-clamp-1 text-lg font-bold text-gray-900">
+                          {book.title}
+                        </h2>
 
-                    <p className="text-center text-gray-600">₹300</p>
+                        <p className="mt-1 text-sm text-gray-500">
+                          by {book.author}
+                        </p>
 
-                    <button className="mt-3 w-full rounded-sm bg-green-600 p-2 text-white hover:bg-green-700">
-                      Approve
-                    </button>
+                        <div className="mt-4 flex items-center justify-between">
+                          <span className="text-xl font-extrabold text-green-700">
+                            ₹{book.discountPrice ?? book.price}
+                          </span>
+
+                          <span className="rounded-lg bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
+                            {book.category || "General"}
+                          </span>
+                        </div>
+
+                        {/* Seller */}
+                        <div className="mt-4 border-t border-gray-100 pt-3">
+                          <p className="text-xs font-medium uppercase tracking-wider text-gray-400">
+                            Posted by
+                          </p>
+
+                          <p className="mt-1 truncate text-sm font-medium text-gray-700">
+                            {book.sellerMail}
+                          </p>
+                        </div>
+
+                        {/* Book ID */}
+                        <div className="mt-3">
+                          <p className="text-xs text-gray-400">Book ID</p>
+
+                          <p className="mt-1 truncate rounded-md bg-gray-50 px-3 py-2 font-mono text-xs text-gray-600">
+                            {book._id}
+                          </p>
+                        </div>
+
+                        {/* Approve Button */}
+                        {book.status !== "approved" &&
+                        book.status !== "sold" ? (
+                          <button
+                            onClick={() => handleApproveBook(book._id)}
+                            className="mt-5 w-full rounded-xl bg-green-600 py-3 font-semibold text-white transition hover:bg-green-700 active:scale-[0.98]"
+                          >
+                            Approve Book
+                          </button>
+                        ) : (
+                          <button
+                            disabled
+                            className="mt-5 w-full cursor-not-allowed rounded-xl bg-gray-100 py-3 font-semibold text-gray-400"
+                          >
+                            {book.status === "sold"
+                              ? "Book Sold"
+                              : "Already Approved"}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="col-span-full py-12 text-center">
+                    <p className="text-lg font-medium text-gray-500">
+                      No books found.
+                    </p>
                   </div>
-                </div>
-
-                {/* Book 2 */}
-                {/* <div className="w-[20rem] rounded-md border border-gray-200 bg-gray-100 p-4 shadow-md">
-                  <h1 className="my-2 text-center font-semibold">
-                    Book ID : 987654322
-                  </h1>
-
-                  <div className="flex flex-col items-center">
-                    <img
-                      src="https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=500&q=80"
-                      className="h-48 w-[60%] object-cover"
-                      alt="The Great Gatsby"
-                    />
-
-                    <h1 className="mt-2 text-center text-lg font-bold">
-                      The Great Gatsby
-                    </h1>
-
-                    <p className="text-center text-gray-600">₹350</p>
-
-                    <button className="mt-3 w-full rounded-sm bg-green-600 p-2 text-white hover:bg-green-700">
-                      Approve
-                    </button>
-                  </div>
-                </div> */}
+                )}
               </div>
             )}
           </div>

@@ -1,10 +1,86 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import AdminHeader from "../components/AdminHeader";
 import Footer from "../../User/components/Footer";
 import AdminSidebar from "../components/AdminSidebar";
 import { FaRegEdit } from "react-icons/fa";
+import { adminProfileEditAPI } from "../../services/allApis";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Settings() {
+  const [profile, setProfile] = useState({
+    username: "",
+    password: "",
+    picture: "",
+    cpassword: "",
+  });
+
+  const [preview, setPreview] = useState("");
+
+  useEffect(() => {
+    if (sessionStorage.getItem("token") && sessionStorage.getItem("user")) {
+      const user = JSON.parse(sessionStorage.getItem("user"));
+      setProfile({
+        ...profile,
+        username: user?.username,
+        picture: user?.picture,
+      });
+    }
+  }, []);
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+
+    if (file) {
+      setProfile({ ...profile, picture: file });
+      setPreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleProfileEdit = async () => {
+    if (profile.password !== profile.cpassword) {
+      return toast.warning("Passwords do not match!");
+    }
+
+    const reqBody = new FormData();
+    reqBody.append("username", profile.username);
+
+    if (profile.password) {
+      reqBody.append("password", profile.password);
+    }
+
+    if (profile.picture instanceof File) {
+      reqBody.append("picture", profile.picture);
+    }
+
+    try {
+      const response = await adminProfileEditAPI(reqBody);
+
+      if (response.status === 200) {
+        const user = JSON.parse(sessionStorage.getItem("user") || "{}");
+
+        const updatedUser = {
+          ...user,
+          ...response.data,
+        };
+
+        sessionStorage.setItem("user", JSON.stringify(updatedUser));
+
+        setProfile((prev) => ({
+          ...prev,
+          username: updatedUser.username,
+          picture: updatedUser.picture,
+        }));
+
+        setPreview("");
+        toast.success("Profile updated successfully!");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Profile update failed!");
+    }
+  };
+
   return (
     <>
       <AdminHeader />
@@ -48,13 +124,21 @@ function Settings() {
                       type="file"
                       name="profpic"
                       id="profpic"
+                      accept="image/*"
                       className="hidden"
+                      onChange={handleFileUpload}
                     />
 
                     <img
-                      src="https://www.pngall.com/wp-content/uploads/5/Profile-Transparent.png"
+                      src={
+                        preview ||
+                        (typeof profile.picture === "string" && profile.picture
+                          ? `http://localhost:3000/uploads/${profile.picture}`
+                          : "") ||
+                        "https://www.pngall.com/wp-content/uploads/5/Profile-Transparent.png"
+                      }
                       alt="Profile"
-                      className="h-32 w-32 object-contain"
+                      className="h-32 w-32 rounded-full object-cover"
                     />
 
                     <div className="absolute bottom-0 right-0 rounded-full bg-yellow-400 p-2 hover:bg-orange-400">
@@ -68,27 +152,60 @@ function Settings() {
                   <input
                     type="text"
                     placeholder="Username"
+                    value={profile.username}
+                    onChange={(e) =>
+                      setProfile({ ...profile, username: e.target.value })
+                    }
                     className="mb-2 w-full rounded border bg-white p-2"
                   />
 
                   <input
                     type="password"
                     placeholder="Password"
+                    value={profile.password}
+                    onChange={(e) =>
+                      setProfile({ ...profile, password: e.target.value })
+                    }
                     className="mb-2 w-full rounded border bg-white p-2"
                   />
 
                   <input
                     type="password"
                     placeholder="Confirm Password"
+                    value={profile.cpassword}
+                    onChange={(e) =>
+                      setProfile({ ...profile, cpassword: e.target.value })
+                    }
                     className="mb-3 w-full rounded border bg-white p-2"
                   />
 
                   <div className="grid grid-cols-2 gap-3">
-                    <button className="group relative cursor-pointer overflow-hidden rounded-md border-2 border-red-500 px-2 py-2 font-semibold text-red-500 transition-all duration-300 before:absolute before:inset-y-0 before:left-0 before:w-0 before:bg-red-500 before:transition-all before:duration-300 hover:text-white hover:before:w-full">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const user = JSON.parse(
+                          sessionStorage.getItem("user") || "{}",
+                        );
+
+                        setProfile({
+                          username: user?.username || "",
+                          password: "",
+                          picture: user?.picture || "",
+                          cpassword: "",
+                        });
+
+                        setPreview("");
+                      }}
+                      className="group relative cursor-pointer overflow-hidden rounded-md border-2 border-red-500 px-2 py-2 font-semibold text-red-500 transition-all duration-300 before:absolute before:inset-y-0 before:left-0 before:w-0 before:bg-red-500 before:transition-all before:duration-300 hover:text-white hover:before:w-full"
+                    >
                       <span className="relative z-10">RESET</span>
                     </button>
 
-                    <button className="group relative cursor-pointer overflow-hidden rounded-md border-2 border-green-500 px-2 py-2 font-semibold text-green-500 transition-all duration-300 before:absolute before:inset-y-0 before:left-0 before:w-0 before:bg-green-500 before:transition-all before:duration-300 hover:text-white hover:before:w-full">
+                    <button
+                      type="button"
+                      onClick={handleProfileEdit}
+                      className="group relative cursor-pointer overflow-hidden rounded-md border-2 border-green-500 px-2 py-2 font-semibold text-green-500 transition-all duration-300 before:absolute before:inset-y-0 before:left-0 before:w-0 before:bg-green-500 before:transition-all before:duration-300 hover:text-white hover:before:w-full"
+                    >
                       <span className="relative z-10">UPDATE</span>
                     </button>
                   </div>
@@ -98,7 +215,7 @@ function Settings() {
           </div>
         </div>
       </div>
-
+      <ToastContainer />
       <Footer />
     </>
   );

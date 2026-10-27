@@ -69,3 +69,13 @@ export const adminAllBookApPI = async () => {
 export const approveBookAPI = async (bid) => {
   return await apiService("GET", `/admin/approve/${bid}`);
 };
+
+// Get all users for admin
+export const adminAllUsersAPI = async () => {
+  return await apiService("GET", "/admin/allUsers");
+};
+
+// Admin Profile Edit
+export const adminProfileEditAPI = async (data) => {
+  return await apiService("PUT", "/admin/profile-update", data);
+};

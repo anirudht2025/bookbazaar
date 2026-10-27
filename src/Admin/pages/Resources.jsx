@@ -2,17 +2,25 @@ import React, { useState, useEffect } from "react";
 import AdminHeader from "../components/AdminHeader";
 import Footer from "../../User/components/Footer";
 import AdminSidebar from "../components/AdminSidebar";
-import { adminAllBookApPI, approveBookAPI } from "../../services/allApis";
+import {
+  adminAllBookApPI,
+  approveBookAPI,
+  adminAllUsersAPI,
+} from "../../services/allApis";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Resources() {
   const [toggle, setToggle] = useState(true);
   const [allBooks, setAllBooks] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
 
   const trueStyle = "border-s-1 border-t-1 border-e-1 p-3";
   const falseStyle = "border-b-1 p-3";
 
   useEffect(() => {
     handleAllBooks();
+    handleAllUsers();
   }, []);
 
   const handleAllBooks = async () => {
@@ -33,14 +41,27 @@ function Resources() {
       const response = await approveBookAPI(bid);
 
       if (response.status === 200) {
-        setAllBooks((prevBooks) =>
-          prevBooks.map((book) =>
-            book._id === bid ? { ...book, status: "approved" } : book,
-          ),
-        );
+        handleAllBooks();
+      } else {
+        toast.warning("Something went wrong!");
       }
     } catch (error) {
       console.log("Failed to approve book:", error);
+      toast.warning("Something went wrong!");
+    }
+  };
+
+  // Get All Users
+  const handleAllUsers = async () => {
+    try {
+      const response = await adminAllUsersAPI();
+
+      if (response.status === 200) {
+        setAllUsers(response.data);
+      }
+    } catch (error) {
+      console.log("Failed to fetch users:", error);
+      toast.warning("Failed to fetch users!");
     }
   };
 
@@ -63,7 +84,10 @@ function Resources() {
             <div className="my-5 flex justify-center">
               <button
                 className={toggle ? trueStyle : falseStyle}
-                onClick={() => setToggle(true)}
+                onClick={() => {
+                  setToggle(true);
+                  handleAllUsers();
+                }}
               >
                 Users
               </button>
@@ -78,10 +102,75 @@ function Resources() {
 
             {/* Users */}
             {toggle ? (
-              <div className="flex flex-wrap justify-around gap-4">
-                <p className="text-gray-500">
-                  User management will be displayed here.
-                </p>
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                {allUsers.length > 0 ? (
+                  allUsers.map((user) => (
+                    <div
+                      key={user._id}
+                      className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition hover:shadow-md hover:shadow-green-700"
+                    >
+                      {/* Profile Image */}
+
+                      <div className="mb-4 flex justify-center">
+                        <img
+                          src={
+                            user.picture
+                              ? user.picture.startsWith("http")
+                                ? user.picture
+                                : `http://localhost:3000/uploads/${user.picture}`
+                              : "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                          }
+                          alt={user.username}
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+
+                            e.currentTarget.src =
+                              "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+                          }}
+                          className="h-16 w-16 rounded-full border border-gray-200 object-cover"
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between gap-3">
+                        <h2 className="min-w-0 truncate text-lg font-bold text-gray-900">
+                          {user.username}
+                        </h2>
+
+                        {/* <p className="mt-2 text-sm text-gray-600">
+                          Email: {user.email}
+                        </p> */}
+
+                        <p
+                          className={`shrink-0 rounded-full px-3 py-1 text-sm font-semibold capitalize ${
+                            user.role === "admin"
+                              ? "bg-green-100 text-green-700"
+                              : "bg-gray-100 text-gray-600"
+                          }`}
+                        >
+                          {user.role || "user"}
+                        </p>
+                      </div>
+
+                      <p className="mt-2 text-sm text-gray-600">{user.email}</p>
+
+                      {/* <p className="mt-2 text-sm capitalize text-gray-600">
+                        Role: {user.role || "user"}
+                      </p> */}
+
+                      {/* <p className="mt-3 text-xs text-gray-400">User ID</p>
+
+                      <p className="mt-1 truncate rounded-md bg-gray-50 px-3 py-2 font-mono text-xs text-gray-600">
+                        {user._id}
+                      </p> */}
+                    </div>
+                  ))
+                ) : (
+                  <div className="col-span-full py-12 text-center">
+                    <p className="text-lg font-medium text-gray-500">
+                      No users found.
+                    </p>
+                  </div>
+                )}
               </div>
             ) : (
               /* Books */
@@ -189,6 +278,7 @@ function Resources() {
         </div>
       </div>
 
+      <ToastContainer position="top-right" autoClose={3000} />
       <Footer />
     </>
   );

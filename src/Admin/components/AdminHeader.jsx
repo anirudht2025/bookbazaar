@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { FaUser, FaCaretUp, FaCaretDown } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 function AdminHeader() {
   const [dropdown, setDropdown] = useState(false);
@@ -8,8 +9,12 @@ function AdminHeader() {
   const nav = useNavigate();
 
   const logout = () => {
-    sessionStorage.clear();
-    nav("/auth");
+    toast.info("Logged out successfully!");
+
+    setTimeout(() => {
+      sessionStorage.clear();
+      nav("/auth");
+    }, 1000);
   };
 
   return (
@@ -45,7 +50,10 @@ function AdminHeader() {
             {/* Dropdown */}
             {dropdown && (
               <div className="absolute right-0 z-10 mt-2 w-32 overflow-hidden rounded-lg border-2 border-slate-800 bg-white shadow-lg">
-                <p onClick={logout} className="cursor-pointer px-4 py-2 text-sm text-red-600 hover:bg-red-500 hover:text-white">
+                <p
+                  onClick={logout}
+                  className="cursor-pointer px-4 py-2 text-sm text-red-600 hover:bg-red-500 hover:text-white"
+                >
                   Logout
                 </p>
               </div>

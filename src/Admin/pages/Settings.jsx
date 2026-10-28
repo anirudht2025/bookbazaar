@@ -37,48 +37,108 @@ function Settings() {
     }
   };
 
+  // const handleProfileEdit = async () => {
+  //   if (profile.password !== profile.cpassword) {
+  //     return toast.warning("Passwords do not match!");
+  //   }
+
+  //   const reqBody = new FormData();
+  //   reqBody.append("username", profile.username);
+
+  //   if (profile.password) {
+  //     reqBody.append("password", profile.password);
+  //   }
+
+  //   if (profile.picture instanceof File) {
+  //     reqBody.append("picture", profile.picture);
+  //   }
+
+  //   try {
+  //     const response = await adminProfileEditAPI(reqBody);
+
+  //     if (response.status === 200) {
+  //       const user = JSON.parse(sessionStorage.getItem("user") || "{}");
+
+  //       const updatedUser = {
+  //         ...user,
+  //         ...response.data,
+  //       };
+
+  //       sessionStorage.setItem("user", JSON.stringify(updatedUser));
+
+  //       setProfile((prev) => ({
+  //         ...prev,
+  //         username: updatedUser.username,
+  //         picture: updatedUser.picture,
+  //       }));
+
+  //       setPreview("");
+  //       toast.success("Profile updated successfully!");
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //     toast.error("Profile update failed!");
+  //   }
+  // };
+
   const handleProfileEdit = async () => {
-    if (profile.password !== profile.cpassword) {
+    const { username, password, cpassword, picture } = profile;
+
+    if (!username || !password || !cpassword || !picture) {
+      return toast.warning("Enter Valid Inputs!!");
+    }
+
+    if (password !== cpassword) {
       return toast.warning("Passwords do not match!");
     }
 
-    const reqBody = new FormData();
-    reqBody.append("username", profile.username);
-
-    if (profile.password) {
-      reqBody.append("password", profile.password);
-    }
-
-    if (profile.picture instanceof File) {
-      reqBody.append("picture", profile.picture);
-    }
-
     try {
-      const response = await adminProfileEditAPI(reqBody);
+      let response;
+
+      if (picture instanceof File && picture.type.startsWith("image/")) {
+        const formData = new FormData();
+
+        formData.append("username", username);
+        formData.append("password", password);
+        formData.append("picture", picture);
+
+        response = await adminProfileEditAPI(formData);
+      } else {
+        const formData = new FormData();
+
+        formData.append("username", username);
+        formData.append("password", password);
+
+        response = await adminProfileEditAPI(formData);
+      }
 
       if (response.status === 200) {
-        const user = JSON.parse(sessionStorage.getItem("user") || "{}");
+        toast.success("Profile Updated Successfully!!");
 
-        const updatedUser = {
-          ...user,
-          ...response.data,
-        };
-
-        sessionStorage.setItem("user", JSON.stringify(updatedUser));
-
-        setProfile((prev) => ({
-          ...prev,
-          username: updatedUser.username,
-          picture: updatedUser.picture,
-        }));
-
-        setPreview("");
-        toast.success("Profile updated successfully!");
+        setTimeout(() => {
+          sessionStorage.clear();
+          nav("/auth");
+        }, 1000);
+      } else {
+        toast.error("Something Went Wrong!! Update Failed!!");
       }
     } catch (error) {
       console.log(error);
-      toast.error("Profile update failed!");
+      toast.error("Something Went Wrong!! Update Failed!!");
     }
+  };
+
+  const handleReset = () => {
+    const user = JSON.parse(sessionStorage.getItem("user") || "{}");
+
+    setProfile({
+      username: user?.username || "",
+      password: "",
+      picture: user?.picture || "",
+      cpassword: "",
+    });
+
+    setPreview("");
   };
 
   return (
@@ -182,20 +242,7 @@ function Settings() {
                   <div className="grid grid-cols-2 gap-3">
                     <button
                       type="button"
-                      onClick={() => {
-                        const user = JSON.parse(
-                          sessionStorage.getItem("user") || "{}",
-                        );
-
-                        setProfile({
-                          username: user?.username || "",
-                          password: "",
-                          picture: user?.picture || "",
-                          cpassword: "",
-                        });
-
-                        setPreview("");
-                      }}
+                      onClick={handleReset}
                       className="group relative cursor-pointer overflow-hidden rounded-md border-2 border-red-500 px-2 py-2 font-semibold text-red-500 transition-all duration-300 before:absolute before:inset-y-0 before:left-0 before:w-0 before:bg-red-500 before:transition-all before:duration-300 hover:text-white hover:before:w-full"
                     >
                       <span className="relative z-10">RESET</span>

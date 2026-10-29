@@ -1,10 +1,56 @@
+import React, { useRef } from "react";
 import { IoMdPin } from "react-icons/io";
 import { FaEnvelope, FaPhoneAlt, FaArrowRight } from "react-icons/fa";
+import emailjs from "@emailjs/browser";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 
 function Contact() {
+  const form = useRef();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(form.current);
+
+    const templateParams = {
+      name: formData.get("name"),
+      email: formData.get("email"),
+      message: formData.get("message"),
+    };
+
+    try {
+      // 1. Send the customer's feedback to your Gmail
+      await emailjs.send(
+        import.meta.env.VITE_SERVICE_ID,
+        import.meta.env.VITE_FEEDBACK_TEMPLATE_ID,
+        templateParams,
+        {
+          publicKey: import.meta.env.VITE_PUBLIC_KEY,
+        },
+      );
+
+      // 2. Send the thank-you auto-reply to the customer
+      await emailjs.send(
+        import.meta.env.VITE_SERVICE_ID,
+        import.meta.env.VITE_TEMPLATE_ID,
+        templateParams,
+        {
+          publicKey: import.meta.env.VITE_PUBLIC_KEY,
+        },
+      );
+
+      toast.success("Feedback sent successfully!");
+      form.current.reset();
+    } catch (error) {
+      console.error("Email sending failed:", error);
+      toast.error("Failed to send feedback. Please try again.");
+    }
+  };
+
   return (
     <>
       <Header />
@@ -54,32 +100,43 @@ function Contact() {
           <section className="mt-10 grid w-full grid-cols-1 gap-6 md:grid-cols-2">
             {/* Contact Form */}
             <div className="rounded-lg bg-gray-800 px-5 py-6">
-              <h2 className="mb-4 text-center text-2xl text-white font-semibold ">
+              <h2 className="mb-4 text-center text-2xl font-semibold text-white">
                 SEND US A MESSAGE
               </h2>
 
-              <input
-                type="text"
-                placeholder="Name"
-                className="mb-3 w-full rounded-md bg-white px-4 py-3 outline-none"
-              />
+              <form ref={form} onSubmit={handleSubmit}>
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Name"
+                  required
+                  className="mb-3 w-full rounded-md bg-white px-4 py-3 outline-none"
+                />
 
-              <input
-                type="email"
-                placeholder="Email"
-                className="mb-3 w-full rounded-md bg-white px-4 py-3 outline-none"
-              />
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Email"
+                  required
+                  className="mb-3 w-full rounded-md bg-white px-4 py-3 outline-none"
+                />
 
-              <textarea
-                placeholder="Message"
-                rows="5"
-                className="mb-3 w-full rounded-md bg-white px-4 py-3 outline-none"
-              ></textarea>
+                <textarea
+                  name="message"
+                  placeholder="Message"
+                  rows="5"
+                  required
+                  className="mb-3 w-full rounded-md bg-white px-4 py-3 outline-none"
+                ></textarea>
 
-              <button className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-md bg-orange-400 py-3 font-semibold text-white hover:bg-orange-500">
-                SEND MESSAGE
-                <FaArrowRight />
-              </button>
+                <button
+                  type="submit"
+                  className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-md bg-orange-400 py-3 font-semibold text-white hover:bg-orange-500"
+                >
+                  SEND MESSAGE
+                  <FaArrowRight />
+                </button>
+              </form>
             </div>
 
             {/* Google Map */}
@@ -87,14 +144,17 @@ function Contact() {
               <iframe
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3913.032971607798!2d75.783742!3d11.258984799999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ba65900d568d853%3A0x86dc9f15ee869de3!2sLuminar%20Technolab%20-%20Software%20training%20institute%20in%20Calicut!5e0!3m2!1sen!2sin!4v1788260583432!5m2!1sen!2sin"
                 className="h-full min-h-87.5 w-full rounded-lg border-0"
-                allowFullScreen=""
+                allowFullScreen
                 loading="lazy"
                 referrerPolicy="strict-origin-when-cross-origin"
+                title="BookBazaar location map"
               ></iframe>
             </div>
           </section>
         </section>
       </div>
+
+      <ToastContainer position="top-right" autoClose={3000} />
 
       <Footer />
     </>

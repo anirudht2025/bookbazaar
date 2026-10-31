@@ -78,6 +78,32 @@ function Auth() {
     }
   };
 
+  // const handleLogin = async (data) => {
+  //   try {
+  //     const response = await userLoginAPI(data);
+
+  //     console.log(response);
+
+  //     if (response.status === 200) {
+  //       sessionStorage.setItem("token", response.data.token);
+  //       sessionStorage.setItem("user", JSON.stringify(response.data.user));
+
+  //       toast.success("Login Successful!");
+
+  //       if (response.data.user.role === "admin") {
+  //         nav("/admin/dashboard");
+  //       } else {
+  //         nav("/");
+  //       }
+  //     } else {
+  //       toast.error("Login Failed!");
+  //     }
+  //   } catch (err) {
+  //     console.log(err);
+  //     toast.error("Login Failed!");
+  //   }
+  // };
+
   const handleLogin = async (data) => {
     try {
       const response = await userLoginAPI(data);
@@ -90,11 +116,17 @@ function Auth() {
 
         toast.success("Login Successful!");
 
-        if (response.data.user.role === "admin") {
-          nav("/admin/dashboard");
-        } else {
-          nav("/");
-        }
+        setAuthUser(true);
+
+        setTimeout(() => {
+          if (response.data.user.role === "admin") {
+            setRole("admin");
+            nav("/admin/dashboard");
+          } else {
+            setRole("user");
+            nav("/");
+          }
+        }, 2000);
       } else {
         toast.error("Login Failed!");
       }

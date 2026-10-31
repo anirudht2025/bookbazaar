@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { FaPlus } from "react-icons/fa";
-import { addBookAPI } from "../../services/allApis";
+import { addBookAPI, generateBookDetailsAIAPI } from "../../services/allApis";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import useDebounce from "../../hooks/useDebounce";
 
 function SellBook() {
   const [book, setBook] = useState({
@@ -23,6 +24,7 @@ function SellBook() {
 
   const [preview, setPreview] = useState("");
   const [previewList, setPreviewList] = useState([]);
+  const debouncedTitleSearch = useDebounce(book.title, 1000);
 
   const handleFileUpload = (e) => {
     const fileBlob = e.target.files[0];
@@ -125,6 +127,30 @@ function SellBook() {
         console.log(err);
         toast.error("Failed to add book!");
       }
+    }
+  };
+
+  useEffect(() => {
+    if (debouncedTitleSearch) {
+      console.log(debouncedTitleSearch);
+      console.log("API Called!");
+      generateAbstractUsingAI();
+    }
+  }, [debouncedTitleSearch]);
+
+  const generateAbstractUsingAI = async () => {
+    try {
+      const response = await generateBookDetailsAIAPI(debouncedTitleSearch);
+
+      if (response.status === 200) {
+        setBook((prev) => ({
+          ...prev,
+          abstract: response.data,
+        }));
+      }
+    } catch (error) {
+      console.log("AI Abstract Generation Failed:", error);
+      toast.error("Failed to generate abstract!");
     }
   };
 

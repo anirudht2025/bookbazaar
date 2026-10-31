@@ -1,17 +1,22 @@
 import React, { useState } from "react";
+import { useContext } from "react";
 import { FaUser, FaCaretUp, FaCaretDown } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { authContext } from "../../contextAPI/AuthContext";
 
 function AdminHeader() {
   const [dropdown, setDropdown] = useState(false);
 
   const nav = useNavigate();
 
+  const { setAuthUser } = useContext(authContext);
+
   const logout = () => {
     toast.info("Logged out successfully!");
 
     setTimeout(() => {
+      setAuthUser("false");
       sessionStorage.clear();
       nav("/auth");
     }, 1000);

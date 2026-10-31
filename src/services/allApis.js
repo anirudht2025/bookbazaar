@@ -79,3 +79,8 @@ export const adminAllUsersAPI = async () => {
 export const adminProfileEditAPI = async (data) => {
   return await apiService("PUT", "/admin/profile-update", data);
 };
+
+// AI generates the abstract for the book
+export const generateBookDetailsAIAPI = async (title) => {
+  return await apiService("POST", "/gen-ai", { title });
+};

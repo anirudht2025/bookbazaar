@@ -1,10 +1,14 @@
 import "./App.css";
+import { useContext } from "react";
 import { Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import Auth from "./pages/Auth";
 import Home from "./pages/Home";
+
+// Context
+import { authContext } from "./contextAPI/AuthContext";
 
 // User
 import Books from "./User/pages/Books";
@@ -25,6 +29,9 @@ import Settings from "./Admin/pages/Settings";
 import Pnf from "./pages/Pnf";
 
 function App() {
+  const { authUser } = useContext(authContext);
+  const { role } = useContext(authContext);
+
   return (
     <>
       <Routes>
@@ -32,26 +39,35 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/auth" element={<Auth />} />
 
-        {/* User */}
-        <Route path="/books" element={<Books />} />
-        <Route path="/books/:bid" element={<BookDetails />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/profile" element={<Profile />} />
+        {authUser && (
+          <>
+            {/* User Routes */}
+            {role === "user" && (
+              <>
+                <Route path="/books" element={<Books />} />
+                <Route path="/books/:bid" element={<BookDetails />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/success" element={<PaymentSuccess />} />
+                <Route path="/failed" element={<PaymentFailed />} />
+              </>
+            )}
 
-        {/* Payment */}
-        <Route path="/success" element={<PaymentSuccess />} />
-        <Route path="/failed" element={<PaymentFailed />} />
-
-        {/* Admin */}
-        <Route path="/admin/dashboard" element={<Dashboard />} />
-        <Route path="/admin/resources" element={<Resources />} />
-        <Route path="/admin/settings" element={<Settings />} />
+            {/* Admin Routes */}
+            {role === "admin" && (
+              <>
+                <Route path="/admin/dashboard" element={<Dashboard />} />
+                <Route path="/admin/resources" element={<Resources />} />
+                <Route path="/admin/settings" element={<Settings />} />
+              </>
+            )}
+          </>
+        )}
 
         {/* 404 */}
         <Route path="*" element={<Pnf />} />
       </Routes>
 
-      {/* React Toastify */}
       <ToastContainer
         position="top-right"
         autoClose={3000}

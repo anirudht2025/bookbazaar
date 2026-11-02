@@ -3,7 +3,7 @@ import axios from "axios";
 
 // Create Axios instance
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:3000",
+  baseURL: "https://bookbazaar-server-dnab.onrender.com",
   timeout: 5000,
 });
 

@@ -22,6 +22,8 @@ import "react-toastify/dist/ReactToastify.css";
 
 function Auth() {
   const [authStatus, setAuthStatus] = useState(false);
+  const [authUser, setAuthUser] = useState(false);
+  const [role, setRole] = useState("");
 
   const nav = useNavigate();
 
